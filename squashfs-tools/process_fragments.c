@@ -285,7 +285,12 @@ void *frag_thrd(void *destination_file)
 		int res;
 
 		if(sparse_files && sparse) {
-			file_buffer->c_byte = 0;
+			/*
+			 * Mark as sparse using the canonical encoding (negative c_byte),
+			 * so downstream block handling does not treat this as a normal
+			 * compressed block with size 0.
+			 */
+			set_sparse(file_buffer, 1);
 			file_buffer->fragment = FALSE;
 		} else
 			file_buffer->c_byte = file_buffer->size;
